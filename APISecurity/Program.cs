@@ -1,4 +1,6 @@
 using APISecurity.Data;
+using APISecurity.Middleware;
+using APISecurity.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,9 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 });
 #endregion
 
+builder.Services.AddScoped<KeyManagementService>();
+builder.Services.AddScoped<AesEncryptionService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// Add the AES Encryption Middleware before routing.
+app.UseMiddleware<AesEncryptionMiddleware>();
 
 app.UseAuthorization();
 
